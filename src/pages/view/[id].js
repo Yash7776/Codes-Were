@@ -1,10 +1,28 @@
-// pages/product/[id].jsx
 
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function ProductView() {
   const router = useRouter();
   const { id } = router.query; // product id from URL
+  const [pin, setpin] = useState()
+  const [flag, setflag] = useState()
+
+  const checkAvability = async ()=>{
+    console.log(pin);
+    const response= await fetch('http://127.0.0.1:3000/api/pincode');
+    const data= await response.json();
+    if(data.includes(parseInt(pin))){
+      setflag(true)
+    }
+    else{
+      setflag(false)
+    }
+  }
+
+  const getPin=(e)=>{
+    setpin(e.target.value);
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -14,7 +32,7 @@ export default function ProductView() {
         {/* Product Images */}
         <div>
           <img
-            src={`https://via.placeholder.com/500x400?text=Product+${id}`}
+            src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="Product"
             className="w-full h-96 object-cover rounded-xl shadow"
           />
@@ -68,6 +86,20 @@ export default function ProductView() {
               <li>1-year warranty included</li>
               <li>Free shipping & returns</li>
             </ul>
+
+            <div className="space-x-2 mt-1.5">
+              <input className="w-40 h-10/12 border-blue-500" type="tel" value={pin} onChange={getPin}/>
+              <button className="px-4 py-2 bg-purple-600 text-white font-semibold rounded-xl shadow hover:bg-purple-700 transition" onClick={checkAvability}>Check Avability</button>
+
+             
+                  {(!flag && flag!=null) && 
+                    <div className="text-red-700 font-medium">Service is not reachable</div>
+                  }
+                  {(flag && flag!=null) && 
+                    <div className="text-green-700 font-medium">Service is reachable</div>
+                  }
+
+            </div>
           </div>
         </div>
       </div>
